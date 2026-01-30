@@ -19,25 +19,25 @@ public class ForgejoTools {
     ForgejoService service;
 
     @Tool(description = "Create a repository for the authenticated user.")
-    public Repository createUserRepo(@ToolArg(description = "Repository options", required = true) CreateRepoOption body) {
+    public Repository forgejoCreateUserRepo(@ToolArg(description = "Repository options", required = true) CreateRepoOption body) {
         return service.createUserRepo(body);
     }
 
     @Tool(description = "Create a repository in an organization.")
-    public Repository createOrgRepo(@ToolArg(description = "Organization name", required = true) String org,
+    public Repository forgejoCreateOrgRepo(@ToolArg(description = "Organization name", required = true) String org,
             @ToolArg(description = "Repository options", required = true) CreateRepoOption body) {
         return service.createOrgRepo(org, body);
     }
 
     @Tool(description = "Create an issue in a repository.")
-    public Issue createIssue(@ToolArg(description = "Owner name", required = true) String owner,
+    public Issue forgejoCreateIssue(@ToolArg(description = "Owner name", required = true) String owner,
             @ToolArg(description = "Repository name", required = true) String repo,
             @ToolArg(description = "Issue options", required = true) CreateIssueOption body) {
         return service.createIssue(owner, repo, body);
     }
 
     @Tool(description = "List issues for a repository.")
-    public List<Issue> listIssues(@ToolArg(description = "Owner name", required = true) String owner,
+    public List<Issue> forgejoListIssues(@ToolArg(description = "Owner name", required = true) String owner,
             @ToolArg(description = "Repository name", required = true) String repo,
             @ToolArg(description = "Issue state: open, closed, all") String state,
             @ToolArg(description = "Page number (1-based)") Integer page,

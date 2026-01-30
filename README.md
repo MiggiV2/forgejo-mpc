@@ -17,10 +17,10 @@ Set credentials via environment variables (see `.env.example`):
 The MCP Streamable HTTP endpoint is `/mcp` (SSE fallback at `/mcp/sse`).
 
 ## MCP Tools
-- `createUserRepo(body)` – body maps to `CreateRepoOption`
-- `createOrgRepo(org, body)` – body maps to `CreateRepoOption`
-- `createIssue(owner, repo, body)` – body maps to `CreateIssueOption`
-- `listIssues(owner, repo, state, page, limit)`
+- `forgejoCreateUserRepo(body)` – body maps to `CreateRepoOption`
+- `forgejoCreateOrgRepo(org, body)` – body maps to `CreateRepoOption`
+- `forgejoCreateIssue(owner, repo, body)` – body maps to `CreateIssueOption`
+- `forgejoListIssues(owner, repo, state, page, limit)`
 
 ## Running
 ```bash

@@ -34,7 +34,7 @@ class ForgejoToolsTest {
         expected.name = "demo";
         when(service.createUserRepo(option)).thenReturn(expected);
 
-        Repository result = tools.createUserRepo(option);
+        Repository result = tools.forgejoCreateUserRepo(option);
 
         assertSame(expected, result);
         verify(service).createUserRepo(option);
@@ -48,7 +48,7 @@ class ForgejoToolsTest {
         expected.name = "demo";
         when(service.createOrgRepo("acme", option)).thenReturn(expected);
 
-        Repository result = tools.createOrgRepo("acme", option);
+        Repository result = tools.forgejoCreateOrgRepo("acme", option);
 
         assertSame(expected, result);
         verify(service).createOrgRepo("acme", option);
@@ -62,7 +62,7 @@ class ForgejoToolsTest {
         expected.title = "Bug";
         when(service.createIssue("acme", "repo", option)).thenReturn(expected);
 
-        Issue result = tools.createIssue("acme", "repo", option);
+        Issue result = tools.forgejoCreateIssue("acme", "repo", option);
 
         assertSame(expected, result);
         verify(service).createIssue("acme", "repo", option);
@@ -75,7 +75,7 @@ class ForgejoToolsTest {
         List<Issue> expected = List.of(issue);
         when(service.listIssues("acme", "repo", "open", 1, 20)).thenReturn(expected);
 
-        List<Issue> result = tools.listIssues("acme", "repo", "open", 1, 20);
+        List<Issue> result = tools.forgejoListIssues("acme", "repo", "open", 1, 20);
 
         assertEquals(1, result.size());
         assertSame(expected, result);
