@@ -1,5 +1,9 @@
 # forgejo-mcp
 
+![Java](https://img.shields.io/badge/Java-21-007396?logo=java&logoColor=white)
+![Quarkus](https://img.shields.io/badge/Quarkus-3.31.1-4695EB?logo=quarkus&logoColor=white)
+![MCP](https://img.shields.io/badge/MCP-Streamable%20HTTP-6E56CF)
+
 Quarkus-based MCP server (Streamable HTTP transport) that exposes Forgejo repository and issue operations via MCP tools.
 
 ## Features
@@ -8,6 +12,17 @@ Quarkus-based MCP server (Streamable HTTP transport) that exposes Forgejo reposi
 - Create issues in repositories
 - List issues in repositories
 
+## Quick start
+1. Copy env file and set credentials:
+	```bash
+	copy env.example .env
+	```
+2. Update `.env` with your Forgejo details.
+3. Start the server:
+	```bash
+	./mvnw quarkus:dev
+	```
+
 ## Configuration
 Set credentials via environment variables (see `.env.example`):
 
@@ -15,6 +30,32 @@ Set credentials via environment variables (see `.env.example`):
 - `FORGEJO_TOKEN` – API token (Authorization header uses `token <value>`)
 
 The MCP Streamable HTTP endpoint is `/mcp` (SSE fallback at `/mcp/sse`).
+
+### Example
+```
+FORGEJO_BASE_URL=https://forgejo.example.com
+FORGEJO_TOKEN=token-value
+```
+
+## Usage (setup example)
+MCP URL (local dev):
+```
+http://localhost:8080/mcp
+```
+
+Example MCP client config:
+```json
+{
+	"mcpServers": {
+		"forgejo": {
+			"transport": "streamable-http",
+			"url": "http://localhost:8080/mcp"
+		}
+	}
+}
+```
+
+Note: currently the Forgejo token is read from `FORGEJO_TOKEN`. In a future update, the server will use the API token from the MCP client `Authorization` header.
 
 ## MCP Tools
 - `forgejoCreateUserRepo(body)` – body maps to `CreateRepoOption`
