@@ -1,6 +1,6 @@
 # forgejo-mcp
 
-Quarkus-based MCP server (WebSocket transport) that exposes Forgejo repository and issue operations via MCP tools.
+Quarkus-based MCP server (Streamable HTTP transport) that exposes Forgejo repository and issue operations via MCP tools.
 
 ## Features
 - Create repositories for the authenticated user
@@ -14,7 +14,7 @@ Set credentials via environment variables (see `.env.example`):
 - `FORGEJO_BASE_URL` – Forgejo instance base URL (e.g. `https://forgejo.example.com`)
 - `FORGEJO_TOKEN` – API token (Authorization header uses `token <value>`)
 
-The MCP WebSocket endpoint is `/mcp/ws`.
+The MCP Streamable HTTP endpoint is `/mcp` (SSE fallback at `/mcp/sse`).
 
 ## MCP Tools
 - `createUserRepo(body)` – body maps to `CreateRepoOption`
