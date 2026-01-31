@@ -2,6 +2,7 @@ package de.mymiggi.forgejo.mcp.client;
 
 import de.mymiggi.forgejo.mcp.model.CreateIssueOption;
 import de.mymiggi.forgejo.mcp.model.CreateRepoOption;
+import de.mymiggi.forgejo.mcp.model.CreateReleaseOption;
 import de.mymiggi.forgejo.mcp.model.Issue;
 import de.mymiggi.forgejo.mcp.model.Release;
 import de.mymiggi.forgejo.mcp.model.ActionTaskList;
@@ -61,4 +62,10 @@ public interface ForgejoClient
 	@POST
 	@Path("/orgs/{org}/repos")
 	Repository createOrgRepo(@PathParam("org") String org, CreateRepoOption body);
+
+	@POST
+	@Path("/repos/{owner}/{repo}/releases")
+	Release createRelease(@PathParam("owner") String owner,
+		@PathParam("repo") String repo,
+		CreateReleaseOption body);
 }

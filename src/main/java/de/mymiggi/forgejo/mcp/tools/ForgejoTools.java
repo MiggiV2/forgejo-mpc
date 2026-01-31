@@ -3,6 +3,7 @@ package de.mymiggi.forgejo.mcp.tools;
 import de.mymiggi.forgejo.mcp.client.ForgejoClient;
 import de.mymiggi.forgejo.mcp.model.ActionTask;
 import de.mymiggi.forgejo.mcp.model.CreateIssueOption;
+import de.mymiggi.forgejo.mcp.model.CreateReleaseOption;
 import de.mymiggi.forgejo.mcp.model.CreateRepoOption;
 import de.mymiggi.forgejo.mcp.model.Issue;
 import de.mymiggi.forgejo.mcp.model.Release;
@@ -45,6 +46,14 @@ public class ForgejoTools
 		@ToolArg(description = "Repository name", required = true) String repo)
 	{
 		return service.listReleases(owner, repo);
+	}
+
+	@Tool(description = "Create a release in a repository.")
+	public Release forgejoCreateRelease(@ToolArg(description = "Owner name", required = true) String owner,
+		@ToolArg(description = "Repository name", required = true) String repo,
+		@ToolArg(description = "Release options", required = true) CreateReleaseOption body)
+	{
+		return service.createRelease(owner, repo, body);
 	}
 
 	@Tool(description = "List a repository's action tasks.")
