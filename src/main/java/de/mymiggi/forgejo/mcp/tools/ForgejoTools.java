@@ -51,9 +51,21 @@ public class ForgejoTools
 	@Tool(description = "Create a release in a repository.")
 	public Release forgejoCreateRelease(@ToolArg(description = "Owner name", required = true) String owner,
 		@ToolArg(description = "Repository name", required = true) String repo,
-		@ToolArg(description = "Release options", required = true) CreateReleaseOption body)
+		@ToolArg(description = "Tag name", required = true) String tagName,
+		@ToolArg(description = "Target commitish") String targetCommitish,
+		@ToolArg(description = "Release name") String name,
+		@ToolArg(description = "Release body") String body,
+		@ToolArg(description = "Is draft") Boolean draft,
+		@ToolArg(description = "Is prerelease") Boolean prerelease)
 	{
-		return service.createRelease(owner, repo, body);
+		CreateReleaseOption option = new CreateReleaseOption();
+		option.tagName = tagName;
+		option.targetCommitish = targetCommitish;
+		option.name = name;
+		option.body = body;
+		option.draft = draft;
+		option.prerelease = prerelease;
+		return service.createRelease(owner, repo, option);
 	}
 
 	@Tool(description = "List a repository's action tasks.")
