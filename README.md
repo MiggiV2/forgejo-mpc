@@ -9,8 +9,12 @@ Quarkus-based MCP server (Streamable HTTP transport) that exposes Forgejo reposi
 ## Features
 - Create repositories for the authenticated user
 - Create repositories in organizations
+- Get repositories
 - Create issues in repositories
 - List issues in repositories
+- List action tasks
+- List releases
+- Create releases
 
 ## Quick start
 1. Copy env file and set credentials:
@@ -30,6 +34,9 @@ Set credentials via environment variables (see `.env.example`):
 - `FORGEJO_TOKEN` – API token (Authorization header uses `token <value>`)
 
 The MCP Streamable HTTP endpoint is `/mcp` (SSE fallback at `/mcp/sse`).
+
+### Docker image
+The image is published as `code.mymiggi.de/miggi/forgejo-mcp` (see `quarkus.container-image.*` in `application.properties`).
 
 ### Example
 ```
@@ -60,8 +67,12 @@ Note: currently the Forgejo token is read from `FORGEJO_TOKEN`. In a future upda
 ## MCP Tools
 - `forgejoCreateUserRepo(body)` – body maps to `CreateRepoOption`
 - `forgejoCreateOrgRepo(org, body)` – body maps to `CreateRepoOption`
+- `forgejoGetRepo(owner, repo)`
 - `forgejoCreateIssue(owner, repo, body)` – body maps to `CreateIssueOption`
 - `forgejoListIssues(owner, repo, state, page, limit)`
+- `forgejoListActionTasks(owner, repo, page, limit)`
+- `forgejoListReleases(owner, repo)`
+- `forgejoCreateRelease(owner, repo, tagName, targetCommitish, name, body, draft, prerelease)`
 
 ## Running
 ```bash
