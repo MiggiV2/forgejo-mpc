@@ -3,6 +3,8 @@ package de.mymiggi.forgejo.mcp.client;
 import de.mymiggi.forgejo.mcp.model.CreateIssueOption;
 import de.mymiggi.forgejo.mcp.model.CreateRepoOption;
 import de.mymiggi.forgejo.mcp.model.Issue;
+import de.mymiggi.forgejo.mcp.model.Release;
+import de.mymiggi.forgejo.mcp.model.ActionTaskList;
 import de.mymiggi.forgejo.mcp.model.Repository;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -32,6 +34,19 @@ public interface ForgejoClient
 		@QueryParam("state") String state,
 		@QueryParam("page") Integer page,
 		@QueryParam("limit") Integer limit);
+
+	@GET
+	@Path("/repos/{owner}/{repo}")
+	Repository getRepo(@PathParam("owner") String owner, @PathParam("repo") String repo);
+
+	@GET
+	@Path("/repos/{owner}/{repo}/actions/tasks")
+	ActionTaskList listActionTasks(@PathParam("owner") String owner, @PathParam("repo") String repo,
+		@QueryParam("page") Integer page, @QueryParam("limit") Integer limit);
+
+	@GET
+	@Path("/repos/{owner}/{repo}/releases")
+	List<Release> listReleases(@PathParam("owner") String owner, @PathParam("repo") String repo);
 
 	@POST
 	@Path("/repos/{owner}/{repo}/issues")

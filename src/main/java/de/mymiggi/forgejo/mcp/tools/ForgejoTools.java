@@ -1,9 +1,11 @@
 package de.mymiggi.forgejo.mcp.tools;
 
 import de.mymiggi.forgejo.mcp.client.ForgejoClient;
+import de.mymiggi.forgejo.mcp.model.ActionTask;
 import de.mymiggi.forgejo.mcp.model.CreateIssueOption;
 import de.mymiggi.forgejo.mcp.model.CreateRepoOption;
 import de.mymiggi.forgejo.mcp.model.Issue;
+import de.mymiggi.forgejo.mcp.model.Release;
 import de.mymiggi.forgejo.mcp.model.Repository;
 import io.quarkiverse.mcp.server.Tool;
 import io.quarkiverse.mcp.server.ToolArg;
@@ -29,6 +31,29 @@ public class ForgejoTools
 		@ToolArg(description = "Repository options", required = true) CreateRepoOption body)
 	{
 		return service.createOrgRepo(org, body);
+	}
+
+	@Tool(description = "Get a repository.")
+	public Repository forgejoGetRepo(@ToolArg(description = "Owner name", required = true) String owner,
+		@ToolArg(description = "Repository name", required = true) String repo)
+	{
+		return service.getRepo(owner, repo);
+	}
+
+	@Tool(description = "List releases for a repository.")
+	public List<Release> forgejoListReleases(@ToolArg(description = "Owner name", required = true) String owner,
+		@ToolArg(description = "Repository name", required = true) String repo)
+	{
+		return service.listReleases(owner, repo);
+	}
+
+	@Tool(description = "List a repository's action tasks.")
+	public List<ActionTask> forgejoListActionTasks(@ToolArg(description = "Owner name", required = true) String owner,
+		@ToolArg(description = "Repository name", required = true) String repo,
+		@ToolArg(description = "Page number (1-based)") Integer page,
+		@ToolArg(description = "Page size") Integer limit)
+	{
+		return service.listActionTasks(owner, repo, page, limit).tasks;
 	}
 
 	@Tool(description = "Create an issue in a repository.")

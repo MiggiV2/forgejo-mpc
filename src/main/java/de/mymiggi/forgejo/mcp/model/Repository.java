@@ -10,6 +10,13 @@ public class Repository
 	public String fullName;
 	@JsonProperty("html_url")
 	public String htmlUrl;
+	@JsonProperty("ssh_url")
+	public String sshUrl;
+	@JsonProperty("clone_url")
+	public String cloneUrl;
+	@JsonProperty("default_branch")
+	public String defaultBranch;
+	public String description;
 	@JsonProperty("private")
 	public Boolean privateRepo;
 }
