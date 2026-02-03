@@ -5,6 +5,7 @@ import de.mymiggi.forgejo.mcp.model.ActionTask;
 import de.mymiggi.forgejo.mcp.model.ActionTaskList;
 import de.mymiggi.forgejo.mcp.model.CreateIssueOption;
 import de.mymiggi.forgejo.mcp.model.CreateRepoOption;
+import de.mymiggi.forgejo.mcp.model.EditReleaseOption;
 import de.mymiggi.forgejo.mcp.model.Issue;
 import de.mymiggi.forgejo.mcp.model.Release;
 import de.mymiggi.forgejo.mcp.model.Repository;
@@ -117,6 +118,26 @@ class ForgejoToolsTest
 		assertEquals(1, result.size());
 		assertSame(expected, result);
 		verify(service).listReleases("acme", "repo");
+	}
+
+	@Test
+	void updateReleaseCallsService()
+	{
+		Release expected = new Release();
+		expected.tagName = "v2.0.0";
+		when(service.updateRelease(org.mockito.ArgumentMatchers.eq("acme"),
+			org.mockito.ArgumentMatchers.eq("repo"),
+			org.mockito.ArgumentMatchers.eq(42L),
+			org.mockito.ArgumentMatchers.any(EditReleaseOption.class))).thenReturn(expected);
+
+		Release result = tools.forgejoUpdateRelease("acme", "repo", 42L, "v2.0.0", "main", "Release 2.0",
+			"notes", true, false, true);
+
+		assertSame(expected, result);
+		verify(service).updateRelease(org.mockito.ArgumentMatchers.eq("acme"),
+			org.mockito.ArgumentMatchers.eq("repo"),
+			org.mockito.ArgumentMatchers.eq(42L),
+			org.mockito.ArgumentMatchers.any(EditReleaseOption.class));
 	}
 
 	@Test

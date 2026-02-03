@@ -3,12 +3,14 @@ package de.mymiggi.forgejo.mcp.client;
 import de.mymiggi.forgejo.mcp.model.CreateIssueOption;
 import de.mymiggi.forgejo.mcp.model.CreateRepoOption;
 import de.mymiggi.forgejo.mcp.model.CreateReleaseOption;
+import de.mymiggi.forgejo.mcp.model.EditReleaseOption;
 import de.mymiggi.forgejo.mcp.model.Issue;
 import de.mymiggi.forgejo.mcp.model.Release;
 import de.mymiggi.forgejo.mcp.model.ActionTaskList;
 import de.mymiggi.forgejo.mcp.model.Repository;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -68,4 +70,11 @@ public interface ForgejoClient
 	Release createRelease(@PathParam("owner") String owner,
 		@PathParam("repo") String repo,
 		CreateReleaseOption body);
+
+	@PATCH
+	@Path("/repos/{owner}/{repo}/releases/{id}")
+	Release updateRelease(@PathParam("owner") String owner,
+		@PathParam("repo") String repo,
+		@PathParam("id") Long id,
+		EditReleaseOption body);
 }

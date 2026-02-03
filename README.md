@@ -15,6 +15,7 @@ Quarkus-based MCP server (Streamable HTTP transport) that exposes Forgejo reposi
 - List action tasks
 - List releases
 - Create releases
+- Update releases
 
 ## Quick start
 1. Copy env file and set credentials:
@@ -73,6 +74,7 @@ Note: currently the Forgejo token is read from `FORGEJO_TOKEN`. In a future upda
 - `forgejoListActionTasks(owner, repo, page, limit)`
 - `forgejoListReleases(owner, repo)`
 - `forgejoCreateRelease(owner, repo, tagName, targetCommitish, name, body, draft, prerelease)`
+- `forgejoUpdateRelease(owner, repo, id, tagName, targetCommitish, name, body, draft, prerelease, hideArchiveLinks)`
 
 ## Running
 ```bash

@@ -5,6 +5,7 @@ import de.mymiggi.forgejo.mcp.model.ActionTask;
 import de.mymiggi.forgejo.mcp.model.CreateIssueOption;
 import de.mymiggi.forgejo.mcp.model.CreateReleaseOption;
 import de.mymiggi.forgejo.mcp.model.CreateRepoOption;
+import de.mymiggi.forgejo.mcp.model.EditReleaseOption;
 import de.mymiggi.forgejo.mcp.model.Issue;
 import de.mymiggi.forgejo.mcp.model.Release;
 import de.mymiggi.forgejo.mcp.model.Repository;
@@ -66,6 +67,29 @@ public class ForgejoTools
 		option.draft = draft;
 		option.prerelease = prerelease;
 		return service.createRelease(owner, repo, option);
+	}
+
+	@Tool(description = "Update a release in a repository.")
+	public Release forgejoUpdateRelease(@ToolArg(description = "Owner name", required = true) String owner,
+		@ToolArg(description = "Repository name", required = true) String repo,
+		@ToolArg(description = "Release ID", required = true) Long id,
+		@ToolArg(description = "Tag name") String tagName,
+		@ToolArg(description = "Target commitish") String targetCommitish,
+		@ToolArg(description = "Release name") String name,
+		@ToolArg(description = "Release body") String body,
+		@ToolArg(description = "Is draft") Boolean draft,
+		@ToolArg(description = "Is prerelease") Boolean prerelease,
+		@ToolArg(description = "Hide archive links") Boolean hideArchiveLinks)
+	{
+		EditReleaseOption option = new EditReleaseOption();
+		option.tagName = tagName;
+		option.targetCommitish = targetCommitish;
+		option.name = name;
+		option.body = body;
+		option.draft = draft;
+		option.prerelease = prerelease;
+		option.hideArchiveLinks = hideArchiveLinks;
+		return service.updateRelease(owner, repo, id, option);
 	}
 
 	@Tool(description = "List a repository's action tasks.")
