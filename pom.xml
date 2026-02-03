@@ -16,8 +16,15 @@
         <quarkus.platform.version>3.31.1</quarkus.platform.version>
         <quarkus.mcp.version>1.9.0</quarkus.mcp.version>
         <skipITs>true</skipITs>
+        <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
         <surefire-plugin.version>3.5.4</surefire-plugin.version>
     </properties>
+
+    <scm>
+        <connection>scm:git:ssh://git@code.mymiggi.de:2222/Miggi/forgejo-mcp-server.git</connection>
+        <developerConnection>scm:git:ssh://git@code.mymiggi.de:2222/Miggi/forgejo-mcp-server.git</developerConnection>
+        <url>https://code.mymiggi.de/Miggi/forgejo-mcp-server</url>
+    </scm>
 
     <dependencyManagement>
         <dependencies>
@@ -136,6 +143,15 @@
                         <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                         <maven.home>${maven.home}</maven.home>
                     </systemPropertyVariables>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>${maven-release-plugin.version}</version>
+                <configuration>
+                    <tagNameFormat>v@{project.version}</tagNameFormat>
+                    <preparationGoals>clean verify</preparationGoals>
                 </configuration>
             </plugin>
         </plugins>
