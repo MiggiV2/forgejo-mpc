@@ -16,6 +16,10 @@ Quarkus-based MCP server (Streamable HTTP transport) that exposes Forgejo reposi
 - List releases
 - Create releases
 - Update releases
+- List pull requests
+- Get a pull request
+- Create pull requests
+- Merge pull requests
 
 ## Quick start
 1. Copy env file and set credentials:
@@ -75,6 +79,10 @@ Note: currently the Forgejo token is read from `FORGEJO_TOKEN`. In a future upda
 - `forgejoListReleases(owner, repo)`
 - `forgejoCreateRelease(owner, repo, tagName, targetCommitish, name, body, draft, prerelease)`
 - `forgejoUpdateRelease(owner, repo, id, tagName, targetCommitish, name, body, draft, prerelease, hideArchiveLinks)`
+- `forgejoListPullRequests(owner, repo, state, sort, page, limit)` – state: open/closed/all; sort: oldest/recentupdate/leastupdate/mostcomment/leastcomment/priority
+- `forgejoGetPullRequest(owner, repo, index)`
+- `forgejoCreatePullRequest(owner, repo, title, body, head, base)`
+- `forgejoMergePullRequest(owner, repo, index, doStrategy, mergeTitle, mergeMessage, deleteBranchAfterMerge)` – doStrategy: merge/rebase/rebase-merge/squash/fast-forward-only/manually-merged
 
 ## Running
 ```bash

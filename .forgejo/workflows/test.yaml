@@ -1,0 +1,31 @@
+name: Test Quarkus Backend
+
+on:
+  push:
+    paths:
+      - 'src/**'
+      - 'pom.xml'
+      - '.mvn/**'
+      - 'mvnw'
+      - '.forgejo/workflows/test.yaml'
+
+jobs:
+  build:
+    runs-on: docker
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: https://github.com/actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Run maven test
+        run: ./mvnw clean test -fae
+
+      - name: Run maven package
+        run: ./mvnw package -Dquarkus.container-image.push=false

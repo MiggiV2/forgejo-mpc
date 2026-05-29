@@ -1,12 +1,15 @@
 package de.mymiggi.forgejo.mcp.client;
 
+import de.mymiggi.forgejo.mcp.model.ActionTaskList;
 import de.mymiggi.forgejo.mcp.model.CreateIssueOption;
-import de.mymiggi.forgejo.mcp.model.CreateRepoOption;
+import de.mymiggi.forgejo.mcp.model.CreatePullRequestOption;
 import de.mymiggi.forgejo.mcp.model.CreateReleaseOption;
+import de.mymiggi.forgejo.mcp.model.CreateRepoOption;
 import de.mymiggi.forgejo.mcp.model.EditReleaseOption;
 import de.mymiggi.forgejo.mcp.model.Issue;
+import de.mymiggi.forgejo.mcp.model.MergePullRequestOption;
+import de.mymiggi.forgejo.mcp.model.PullRequest;
 import de.mymiggi.forgejo.mcp.model.Release;
-import de.mymiggi.forgejo.mcp.model.ActionTaskList;
 import de.mymiggi.forgejo.mcp.model.Repository;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -77,4 +80,32 @@ public interface ForgejoClient
 		@PathParam("repo") String repo,
 		@PathParam("id") Long id,
 		EditReleaseOption body);
+
+	@GET
+	@Path("/repos/{owner}/{repo}/pulls")
+	List<PullRequest> listPullRequests(@PathParam("owner") String owner,
+		@PathParam("repo") String repo,
+		@QueryParam("state") String state,
+		@QueryParam("sort") String sort,
+		@QueryParam("page") Integer page,
+		@QueryParam("limit") Integer limit);
+
+	@GET
+	@Path("/repos/{owner}/{repo}/pulls/{index}")
+	PullRequest getPullRequest(@PathParam("owner") String owner,
+		@PathParam("repo") String repo,
+		@PathParam("index") Long index);
+
+	@POST
+	@Path("/repos/{owner}/{repo}/pulls")
+	PullRequest createPullRequest(@PathParam("owner") String owner,
+		@PathParam("repo") String repo,
+		CreatePullRequestOption body);
+
+	@POST
+	@Path("/repos/{owner}/{repo}/pulls/{index}/merge")
+	void mergePullRequest(@PathParam("owner") String owner,
+		@PathParam("repo") String repo,
+		@PathParam("index") Long index,
+		MergePullRequestOption body);
 }

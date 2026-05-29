@@ -3,10 +3,13 @@ package de.mymiggi.forgejo.mcp.tools;
 import de.mymiggi.forgejo.mcp.client.ForgejoClient;
 import de.mymiggi.forgejo.mcp.model.ActionTask;
 import de.mymiggi.forgejo.mcp.model.CreateIssueOption;
+import de.mymiggi.forgejo.mcp.model.CreatePullRequestOption;
 import de.mymiggi.forgejo.mcp.model.CreateReleaseOption;
 import de.mymiggi.forgejo.mcp.model.CreateRepoOption;
 import de.mymiggi.forgejo.mcp.model.EditReleaseOption;
 import de.mymiggi.forgejo.mcp.model.Issue;
+import de.mymiggi.forgejo.mcp.model.MergePullRequestOption;
+import de.mymiggi.forgejo.mcp.model.PullRequest;
 import de.mymiggi.forgejo.mcp.model.Release;
 import de.mymiggi.forgejo.mcp.model.Repository;
 import io.quarkiverse.mcp.server.Tool;
@@ -117,5 +120,58 @@ public class ForgejoTools
 		@ToolArg(description = "Page size") Integer limit)
 	{
 		return service.listIssues(owner, repo, state, page, limit);
+	}
+
+	@Tool(description = "List pull requests for a repository.")
+	public List<PullRequest> forgejoListPullRequests(@ToolArg(description = "Owner name", required = true) String owner,
+		@ToolArg(description = "Repository name", required = true) String repo,
+		@ToolArg(description = "PR state: open, closed, all") String state,
+		@ToolArg(description = "Sort: oldest, recentupdate, leastupdate, mostcomment, leastcomment, priority") String sort,
+		@ToolArg(description = "Page number (1-based)") Integer page,
+		@ToolArg(description = "Page size") Integer limit)
+	{
+		return service.listPullRequests(owner, repo, state, sort, page, limit);
+	}
+
+	@Tool(description = "Get a pull request by index.")
+	public PullRequest forgejoGetPullRequest(@ToolArg(description = "Owner name", required = true) String owner,
+		@ToolArg(description = "Repository name", required = true) String repo,
+		@ToolArg(description = "PR index (number)", required = true) Long index)
+	{
+		return service.getPullRequest(owner, repo, index);
+	}
+
+	@Tool(description = "Create a pull request in a repository.")
+	public PullRequest forgejoCreatePullRequest(@ToolArg(description = "Owner name", required = true) String owner,
+		@ToolArg(description = "Repository name", required = true) String repo,
+		@ToolArg(description = "PR title", required = true) String title,
+		@ToolArg(description = "PR body") String body,
+		@ToolArg(description = "Head branch (source)", required = true) String head,
+		@ToolArg(description = "Base branch (target)", required = true) String base)
+	{
+		CreatePullRequestOption option = new CreatePullRequestOption();
+		option.title = title;
+		option.body = body;
+		option.head = head;
+		option.base = base;
+		return service.createPullRequest(owner, repo, option);
+	}
+
+	@Tool(description = "Merge a pull request.")
+	public String forgejoMergePullRequest(@ToolArg(description = "Owner name", required = true) String owner,
+		@ToolArg(description = "Repository name", required = true) String repo,
+		@ToolArg(description = "PR index (number)", required = true) Long index,
+		@ToolArg(description = "Merge strategy: merge, rebase, rebase-merge, squash, fast-forward-only, manually-merged", required = true) String doStrategy,
+		@ToolArg(description = "Merge commit title") String mergeTitle,
+		@ToolArg(description = "Merge commit message") String mergeMessage,
+		@ToolArg(description = "Delete head branch after merge") Boolean deleteBranchAfterMerge)
+	{
+		MergePullRequestOption option = new MergePullRequestOption();
+		option.doStrategy = doStrategy;
+		option.mergeTitle = mergeTitle;
+		option.mergeMessage = mergeMessage;
+		option.deleteBranchAfterMerge = deleteBranchAfterMerge;
+		service.mergePullRequest(owner, repo, index, option);
+		return "Pull request " + index + " merged";
 	}
 }

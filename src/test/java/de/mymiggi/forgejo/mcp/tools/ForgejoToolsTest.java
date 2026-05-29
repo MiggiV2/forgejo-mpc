@@ -4,9 +4,12 @@ import de.mymiggi.forgejo.mcp.client.ForgejoClient;
 import de.mymiggi.forgejo.mcp.model.ActionTask;
 import de.mymiggi.forgejo.mcp.model.ActionTaskList;
 import de.mymiggi.forgejo.mcp.model.CreateIssueOption;
+import de.mymiggi.forgejo.mcp.model.CreatePullRequestOption;
 import de.mymiggi.forgejo.mcp.model.CreateRepoOption;
 import de.mymiggi.forgejo.mcp.model.EditReleaseOption;
 import de.mymiggi.forgejo.mcp.model.Issue;
+import de.mymiggi.forgejo.mcp.model.MergePullRequestOption;
+import de.mymiggi.forgejo.mcp.model.PullRequest;
 import de.mymiggi.forgejo.mcp.model.Release;
 import de.mymiggi.forgejo.mcp.model.Repository;
 import io.quarkus.test.InjectMock;
@@ -19,6 +22,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -154,5 +158,63 @@ class ForgejoToolsTest
 		assertEquals(1, result.size());
 		assertSame(expected.tasks, result);
 		verify(service).listActionTasks("acme", "repo", 1, 20);
+	}
+
+	@Test
+	void listPullRequestsCallsService()
+	{
+		PullRequest pr = new PullRequest();
+		pr.title = "Add feature";
+		List<PullRequest> expected = List.of(pr);
+		when(service.listPullRequests("acme", "repo", "open", "recentupdate", 1, 20)).thenReturn(expected);
+
+		List<PullRequest> result = tools.forgejoListPullRequests("acme", "repo", "open", "recentupdate", 1, 20);
+
+		assertEquals(1, result.size());
+		assertSame(expected, result);
+		verify(service).listPullRequests("acme", "repo", "open", "recentupdate", 1, 20);
+	}
+
+	@Test
+	void getPullRequestCallsService()
+	{
+		PullRequest expected = new PullRequest();
+		expected.number = 7L;
+		expected.title = "Refactor";
+		when(service.getPullRequest("acme", "repo", 7L)).thenReturn(expected);
+
+		PullRequest result = tools.forgejoGetPullRequest("acme", "repo", 7L);
+
+		assertSame(expected, result);
+		verify(service).getPullRequest("acme", "repo", 7L);
+	}
+
+	@Test
+	void createPullRequestCallsService()
+	{
+		PullRequest expected = new PullRequest();
+		expected.number = 11L;
+		when(service.createPullRequest(org.mockito.ArgumentMatchers.eq("acme"),
+			org.mockito.ArgumentMatchers.eq("repo"),
+			org.mockito.ArgumentMatchers.any(CreatePullRequestOption.class))).thenReturn(expected);
+
+		PullRequest result = tools.forgejoCreatePullRequest("acme", "repo", "New PR", "body text", "feature", "main");
+
+		assertSame(expected, result);
+		verify(service).createPullRequest(org.mockito.ArgumentMatchers.eq("acme"),
+			org.mockito.ArgumentMatchers.eq("repo"),
+			org.mockito.ArgumentMatchers.any(CreatePullRequestOption.class));
+	}
+
+	@Test
+	void mergePullRequestCallsService()
+	{
+		String result = tools.forgejoMergePullRequest("acme", "repo", 42L, "squash", "Title", "Message", true);
+
+		assertTrue(result.contains("42"));
+		verify(service).mergePullRequest(org.mockito.ArgumentMatchers.eq("acme"),
+			org.mockito.ArgumentMatchers.eq("repo"),
+			org.mockito.ArgumentMatchers.eq(42L),
+			org.mockito.ArgumentMatchers.any(MergePullRequestOption.class));
 	}
 }
