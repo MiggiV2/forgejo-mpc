@@ -15,7 +15,7 @@
         <quarkus.platform.version>3.36.0</quarkus.platform.version>
         <quarkus.mcp.version>1.9.0</quarkus.mcp.version>
         <skipITs>true</skipITs>
-        <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
+        <maven-release-plugin.version>3.3.1</maven-release-plugin.version>
         <surefire-plugin.version>3.5.6</surefire-plugin.version>
     </properties>
 
