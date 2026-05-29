@@ -24,8 +24,13 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Set up Maven
+        uses: https://github.com/stCarolas/setup-maven@v5
+        with:
+          maven-version: 3.9.10
+
       - name: Run maven test
-        run: ./mvnw clean test -fae
+        run: mvn clean test -fae
 
       - name: Run maven package
-        run: ./mvnw package -Dquarkus.container-image.build=false -Dquarkus.container-image.push=false
+        run: mvn package -Dquarkus.container-image.build=false -Dquarkus.container-image.push=false

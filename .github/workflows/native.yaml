@@ -31,6 +31,11 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: 3.9.10
+
       - name: Login to Forgejo Registry
         uses: docker/login-action@v3
         with:
@@ -40,6 +45,6 @@ jobs:
 
       - name: Build native image and push (via Quarkus + jib)
         run: >-
-          ./mvnw -B package -Pnative
+          mvn -B package -Pnative
           -Dquarkus.native.container-build=true
           -Dquarkus.container-image.additional-tags=latest
