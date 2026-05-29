@@ -28,4 +28,4 @@ jobs:
         run: ./mvnw clean test -fae
 
       - name: Run maven package
-        run: ./mvnw package -Dquarkus.container-image.push=false
+        run: ./mvnw package -Dquarkus.container-image.build=false -Dquarkus.container-image.push=false
