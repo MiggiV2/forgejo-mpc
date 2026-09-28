@@ -17,10 +17,13 @@ import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.faulttolerance.Retry;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
+import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 import java.util.List;
@@ -28,12 +31,14 @@ import java.util.List;
 @Path("/api/v1")
 @RegisterRestClient(configKey = "forgejo")
 @RegisterClientHeaders(TokenPropagationHeadersFactory.class)
+@RegisterProvider(ForgejoResponseExceptionMapper.class)
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface ForgejoClient
 {
 
 	@GET
+	@Retry(maxRetries = 2, delay = 300, jitter = 100, retryOn = { ForgejoUnavailableException.class, ProcessingException.class })
 	@Path("/repos/{owner}/{repo}/issues")
 	List<Issue> listIssues(@PathParam("owner") String owner,
 		@PathParam("repo") String repo,
@@ -42,15 +47,18 @@ public interface ForgejoClient
 		@QueryParam("limit") Integer limit);
 
 	@GET
+	@Retry(maxRetries = 2, delay = 300, jitter = 100, retryOn = { ForgejoUnavailableException.class, ProcessingException.class })
 	@Path("/repos/{owner}/{repo}")
 	Repository getRepo(@PathParam("owner") String owner, @PathParam("repo") String repo);
 
 	@GET
+	@Retry(maxRetries = 2, delay = 300, jitter = 100, retryOn = { ForgejoUnavailableException.class, ProcessingException.class })
 	@Path("/repos/{owner}/{repo}/actions/tasks")
 	ActionTaskList listActionTasks(@PathParam("owner") String owner, @PathParam("repo") String repo,
 		@QueryParam("page") Integer page, @QueryParam("limit") Integer limit);
 
 	@GET
+	@Retry(maxRetries = 2, delay = 300, jitter = 100, retryOn = { ForgejoUnavailableException.class, ProcessingException.class })
 	@Path("/repos/{owner}/{repo}/releases")
 	List<Release> listReleases(@PathParam("owner") String owner, @PathParam("repo") String repo);
 
@@ -82,6 +90,7 @@ public interface ForgejoClient
 		EditReleaseOption body);
 
 	@GET
+	@Retry(maxRetries = 2, delay = 300, jitter = 100, retryOn = { ForgejoUnavailableException.class, ProcessingException.class })
 	@Path("/repos/{owner}/{repo}/pulls")
 	List<PullRequest> listPullRequests(@PathParam("owner") String owner,
 		@PathParam("repo") String repo,
@@ -91,6 +100,7 @@ public interface ForgejoClient
 		@QueryParam("limit") Integer limit);
 
 	@GET
+	@Retry(maxRetries = 2, delay = 300, jitter = 100, retryOn = { ForgejoUnavailableException.class, ProcessingException.class })
 	@Path("/repos/{owner}/{repo}/pulls/{index}")
 	PullRequest getPullRequest(@PathParam("owner") String owner,
 		@PathParam("repo") String repo,
