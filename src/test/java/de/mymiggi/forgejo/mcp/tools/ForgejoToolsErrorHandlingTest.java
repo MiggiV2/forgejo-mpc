@@ -113,6 +113,20 @@ class ForgejoToolsErrorHandlingTest
 			.thenAssertResults();
 	}
 
+	@Test
+	void schemaAdvertisesJsonPropertyNames()
+	{
+		clientWithAuthorization("abc").when()
+			.toolsList(page -> {
+				String schema = page.findByName("forgejoCreateUserRepo").inputSchema().encode();
+				assertTrue(schema.contains("\"private\""), schema);
+				assertTrue(schema.contains("\"auto_init\""), schema);
+				assertFalse(schema.contains("privateRepo"), schema);
+				assertFalse(schema.contains("autoInit"), schema);
+			})
+			.thenAssertResults();
+	}
+
 	private static McpStreamableTestClient clientWithAuthorization(String authorization)
 	{
 		return McpAssured.newStreamableClient()
