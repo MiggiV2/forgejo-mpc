@@ -17,13 +17,13 @@ import io.quarkiverse.mcp.server.Tool;
 import io.quarkiverse.mcp.server.ToolArg;
 import io.quarkiverse.mcp.server.ToolCallException;
 import jakarta.enterprise.context.ApplicationScoped;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.resteasy.reactive.client.api.ClientMultipartForm;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 @ApplicationScoped
@@ -32,6 +32,9 @@ public class ForgejoTools
 {
 	@RestClient
 	ForgejoClient service;
+
+	@ConfigProperty(name = "forgejo.release-asset.max-bytes", defaultValue = "10485760")
+	int maxAssetBytes;
 
 	@Tool(description = "Create a repository for the authenticated user.")
 	public Repository forgejoCreateUserRepo(@ToolArg(description = "Repository options", required = true) CreateRepoOption body)
@@ -55,9 +58,11 @@ public class ForgejoTools
 
 	@Tool(description = "List releases for a repository.")
 	public List<Release> forgejoListReleases(@ToolArg(description = "Owner name", required = true) String owner,
-		@ToolArg(description = "Repository name", required = true) String repo)
+		@ToolArg(description = "Repository name", required = true) String repo,
+		@ToolArg(description = "Page number (1-based)", required = false) Integer page,
+		@ToolArg(description = "Page size", required = false) Integer limit)
 	{
-		return service.listReleases(owner, repo);
+		return service.listReleases(owner, repo, page, limit);
 	}
 
 	@Tool(description = "Create a release in a repository.")
@@ -113,17 +118,35 @@ public class ForgejoTools
 		@ToolArg(description = "Asset content, base64-encoded", required = false) String contentBase64,
 		@ToolArg(description = "URL of an externally hosted asset", required = false) String externalUrl)
 	{
-		if (Stream.of(content, contentBase64, externalUrl).filter(Objects::nonNull).count() != 1)
+		if (name == null || name.isBlank())
+		{
+			throw new ToolCallException("Provide a non-blank asset name");
+		}
+		if (Stream.of(content, contentBase64, externalUrl).filter(source -> !isEmpty(source)).count() != 1)
 		{
 			throw new ToolCallException("Provide exactly one of content, contentBase64 or externalUrl");
 		}
-		if (externalUrl != null)
+		if (!isEmpty(externalUrl))
 		{
 			return service.linkReleaseAsset(owner, repo, releaseId, name,
 				ClientMultipartForm.create().attribute("external_url", externalUrl, null));
 		}
-		byte[] bytes = content != null ? content.getBytes(StandardCharsets.UTF_8) : decodeBase64(contentBase64);
+		byte[] bytes = !isEmpty(content) ? content.getBytes(StandardCharsets.UTF_8) : decodeBase64(contentBase64);
+		if (bytes.length > maxAssetBytes)
+		{
+			throw new ToolCallException("Asset is " + bytes.length + " bytes, the limit is " + maxAssetBytes + " bytes");
+		}
 		return service.uploadReleaseAsset(owner, repo, releaseId, name, bytes);
+	}
+
+	@Tool(description = "Delete an asset from a release.")
+	public String forgejoDeleteReleaseAsset(@ToolArg(description = "Owner name", required = true) String owner,
+		@ToolArg(description = "Repository name", required = true) String repo,
+		@ToolArg(description = "Release ID", required = true) Long releaseId,
+		@ToolArg(description = "Asset ID", required = true) Long assetId)
+	{
+		service.deleteReleaseAsset(owner, repo, releaseId, assetId);
+		return "Asset " + assetId + " deleted from release " + releaseId;
 	}
 
 	@Tool(description = "List a repository's action tasks.")
@@ -204,6 +227,11 @@ public class ForgejoTools
 		option.deleteBranchAfterMerge = deleteBranchAfterMerge;
 		service.mergePullRequest(owner, repo, index, option);
 		return "Pull request " + index + " merged";
+	}
+
+	private static boolean isEmpty(String value)
+	{
+		return value == null || value.isEmpty();
 	}
 
 	private static byte[] decodeBase64(String contentBase64)

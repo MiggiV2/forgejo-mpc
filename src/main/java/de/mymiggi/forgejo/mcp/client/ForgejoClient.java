@@ -13,6 +13,7 @@ import de.mymiggi.forgejo.mcp.model.PullRequest;
 import de.mymiggi.forgejo.mcp.model.Release;
 import de.mymiggi.forgejo.mcp.model.Repository;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
@@ -62,7 +63,8 @@ public interface ForgejoClient
 	@GET
 	@Retry(maxRetries = 2, delay = 300, jitter = 100, retryOn = { ForgejoUnavailableException.class, ProcessingException.class })
 	@Path("/repos/{owner}/{repo}/releases")
-	List<Release> listReleases(@PathParam("owner") String owner, @PathParam("repo") String repo);
+	List<Release> listReleases(@PathParam("owner") String owner, @PathParam("repo") String repo,
+		@QueryParam("page") Integer page, @QueryParam("limit") Integer limit);
 
 	@POST
 	@Path("/repos/{owner}/{repo}/issues")
@@ -108,6 +110,13 @@ public interface ForgejoClient
 		@PathParam("id") Long id,
 		@QueryParam("name") String name,
 		ClientMultipartForm form);
+
+	@DELETE
+	@Path("/repos/{owner}/{repo}/releases/{id}/assets/{attachmentId}")
+	void deleteReleaseAsset(@PathParam("owner") String owner,
+		@PathParam("repo") String repo,
+		@PathParam("id") Long id,
+		@PathParam("attachmentId") Long attachmentId);
 
 	@GET
 	@Retry(maxRetries = 2, delay = 300, jitter = 100, retryOn = { ForgejoUnavailableException.class, ProcessingException.class })

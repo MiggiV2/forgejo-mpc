@@ -78,10 +78,11 @@ Example MCP client config:
 - `forgejoCreateIssue(owner, repo, body)` – body maps to `CreateIssueOption`
 - `forgejoListIssues(owner, repo, state, page, limit)`
 - `forgejoListActionTasks(owner, repo, page, limit)`
-- `forgejoListReleases(owner, repo)`
+- `forgejoListReleases(owner, repo, page, limit)`
 - `forgejoCreateRelease(owner, repo, tagName, targetCommitish, name, body, draft, prerelease)`
 - `forgejoUpdateRelease(owner, repo, id, tagName, targetCommitish, name, body, draft, prerelease, hideArchiveLinks)`
-- `forgejoUploadReleaseAsset(owner, repo, releaseId, name, content | contentBase64 | externalUrl)` – exactly one source: UTF-8 text, base64-encoded binary, or a link to an externally hosted file
+- `forgejoUploadReleaseAsset(owner, repo, releaseId, name, content | contentBase64 | externalUrl)` – exactly one source: UTF-8 text, base64-encoded binary (max. `forgejo.release-asset.max-bytes`, default 10 MiB), or a link to an externally hosted file
+- `forgejoDeleteReleaseAsset(owner, repo, releaseId, assetId)`
 - `forgejoListPullRequests(owner, repo, state, sort, page, limit)` – state: open/closed/all; sort: oldest/recentupdate/leastupdate/mostcomment/leastcomment/priority
 - `forgejoGetPullRequest(owner, repo, index)`
 - `forgejoCreatePullRequest(owner, repo, title, body, head, base)`

@@ -113,6 +113,39 @@ class ForgejoReleaseAssetTest
 	}
 
 	@Test
+	void emptyOptionalSourcesAreTreatedAsAbsent()
+	{
+		// when
+		upload(Map.of("name", "notes.txt", "content", "x", "contentBase64", "", "externalUrl", ""),
+			response -> assertFalse(response.isError(), () -> response.content().getFirst().asText().text()));
+
+		// then
+		assertArrayEquals("x".getBytes(StandardCharsets.UTF_8), ForgejoStub.lastAssetBody);
+	}
+
+	@Test
+	void blankNameIsRejectedWithoutCallingForgejo()
+	{
+		upload(Map.of("name", "  ", "content", "x"), response -> {
+			assertTrue(response.isError());
+			assertTrue(response.content().getFirst().asText().text().contains("name"));
+		});
+
+		assertNull(ForgejoStub.lastAssetBody);
+	}
+
+	@Test
+	void contentAboveSizeLimitIsRejectedWithoutCallingForgejo()
+	{
+		upload(Map.of("name", "big.bin", "contentBase64", Base64.getEncoder().encodeToString(new byte[65])), response -> {
+			assertTrue(response.isError());
+			assertTrue(response.content().getFirst().asText().text().contains("64 bytes"));
+		});
+
+		assertNull(ForgejoStub.lastAssetBody);
+	}
+
+	@Test
 	void onlyLocatorArgumentsAreRequiredInSchema()
 	{
 		client().when()

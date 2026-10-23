@@ -115,13 +115,22 @@ class ForgejoToolsTest
 		Release release = new Release();
 		release.tagName = "v1.0.0";
 		List<Release> expected = List.of(release);
-		when(service.listReleases("acme", "repo")).thenReturn(expected);
+		when(service.listReleases("acme", "repo", 2, 50)).thenReturn(expected);
 
-		List<Release> result = tools.forgejoListReleases("acme", "repo");
+		List<Release> result = tools.forgejoListReleases("acme", "repo", 2, 50);
 
 		assertEquals(1, result.size());
 		assertSame(expected, result);
-		verify(service).listReleases("acme", "repo");
+		verify(service).listReleases("acme", "repo", 2, 50);
+	}
+
+	@Test
+	void deleteReleaseAssetCallsService()
+	{
+		String result = tools.forgejoDeleteReleaseAsset("acme", "repo", 7L, 3L);
+
+		assertTrue(result.contains("3"), result);
+		verify(service).deleteReleaseAsset("acme", "repo", 7L, 3L);
 	}
 
 	@Test
