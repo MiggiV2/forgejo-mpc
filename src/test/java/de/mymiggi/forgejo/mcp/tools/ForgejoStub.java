@@ -14,6 +14,9 @@ public class ForgejoStub implements QuarkusTestResourceLifecycleManager
 {
 	static volatile String lastAuthorization;
 	static final AtomicInteger flakyCalls = new AtomicInteger();
+	static volatile String lastAssetQuery;
+	static volatile String lastAssetContentType;
+	static volatile byte[] lastAssetBody;
 
 	private HttpServer server;
 
@@ -45,6 +48,13 @@ public class ForgejoStub implements QuarkusTestResourceLifecycleManager
 			}
 		});
 		server.createContext("/api/v1/repos/acme/hangup", HttpExchange::close);
+		server.createContext("/api/v1/repos/acme/demo/releases/7/assets", exchange -> {
+			lastAssetQuery = exchange.getRequestURI().getRawQuery();
+			lastAssetContentType = exchange.getRequestHeaders().getFirst("Content-Type");
+			lastAssetBody = exchange.getRequestBody().readAllBytes();
+			respond(exchange, 201, "{\"id\":3,\"name\":\"app.zip\",\"size\":4,\"type\":\"attachment\","
+				+ "\"browser_download_url\":\"https://forgejo/attachments/abc\"}");
+		});
 		server.start();
 		return Map.of("quarkus.rest-client.forgejo.url", "http://localhost:" + server.getAddress().getPort());
 	}

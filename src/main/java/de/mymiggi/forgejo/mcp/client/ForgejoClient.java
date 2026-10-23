@@ -1,6 +1,7 @@
 package de.mymiggi.forgejo.mcp.client;
 
 import de.mymiggi.forgejo.mcp.model.ActionTaskList;
+import de.mymiggi.forgejo.mcp.model.Attachment;
 import de.mymiggi.forgejo.mcp.model.CreateIssueOption;
 import de.mymiggi.forgejo.mcp.model.CreatePullRequestOption;
 import de.mymiggi.forgejo.mcp.model.CreateReleaseOption;
@@ -25,6 +26,7 @@ import org.eclipse.microprofile.faulttolerance.Retry;
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders;
 import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+import org.jboss.resteasy.reactive.client.api.ClientMultipartForm;
 
 import java.util.List;
 
@@ -88,6 +90,24 @@ public interface ForgejoClient
 		@PathParam("repo") String repo,
 		@PathParam("id") Long id,
 		EditReleaseOption body);
+
+	@POST
+	@Path("/repos/{owner}/{repo}/releases/{id}/assets")
+	@Consumes(MediaType.APPLICATION_OCTET_STREAM)
+	Attachment uploadReleaseAsset(@PathParam("owner") String owner,
+		@PathParam("repo") String repo,
+		@PathParam("id") Long id,
+		@QueryParam("name") String name,
+		byte[] content);
+
+	@POST
+	@Path("/repos/{owner}/{repo}/releases/{id}/assets")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	Attachment linkReleaseAsset(@PathParam("owner") String owner,
+		@PathParam("repo") String repo,
+		@PathParam("id") Long id,
+		@QueryParam("name") String name,
+		ClientMultipartForm form);
 
 	@GET
 	@Retry(maxRetries = 2, delay = 300, jitter = 100, retryOn = { ForgejoUnavailableException.class, ProcessingException.class })

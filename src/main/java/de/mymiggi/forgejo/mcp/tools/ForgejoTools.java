@@ -2,6 +2,7 @@ package de.mymiggi.forgejo.mcp.tools;
 
 import de.mymiggi.forgejo.mcp.client.ForgejoClient;
 import de.mymiggi.forgejo.mcp.model.ActionTask;
+import de.mymiggi.forgejo.mcp.model.Attachment;
 import de.mymiggi.forgejo.mcp.model.CreateIssueOption;
 import de.mymiggi.forgejo.mcp.model.CreatePullRequestOption;
 import de.mymiggi.forgejo.mcp.model.CreateReleaseOption;
@@ -14,10 +15,16 @@ import de.mymiggi.forgejo.mcp.model.Release;
 import de.mymiggi.forgejo.mcp.model.Repository;
 import io.quarkiverse.mcp.server.Tool;
 import io.quarkiverse.mcp.server.ToolArg;
+import io.quarkiverse.mcp.server.ToolCallException;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.jboss.resteasy.reactive.client.api.ClientMultipartForm;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 @ApplicationScoped
 @TranslateForgejoErrors
@@ -94,6 +101,29 @@ public class ForgejoTools
 		option.prerelease = prerelease;
 		option.hideArchiveLinks = hideArchiveLinks;
 		return service.updateRelease(owner, repo, id, option);
+	}
+
+	@Tool(description = "Upload an asset to a release. Provide exactly one of content (UTF-8 text), contentBase64 (binary file, "
+		+ "base64-encoded) or externalUrl (link to a file hosted elsewhere). Use forgejoListReleases to find the release ID.")
+	public Attachment forgejoUploadReleaseAsset(@ToolArg(description = "Owner name", required = true) String owner,
+		@ToolArg(description = "Repository name", required = true) String repo,
+		@ToolArg(description = "Release ID", required = true) Long releaseId,
+		@ToolArg(description = "Asset file name, e.g. app-1.0.0.zip", required = true) String name,
+		@ToolArg(description = "Asset content as UTF-8 text", required = false) String content,
+		@ToolArg(description = "Asset content, base64-encoded", required = false) String contentBase64,
+		@ToolArg(description = "URL of an externally hosted asset", required = false) String externalUrl)
+	{
+		if (Stream.of(content, contentBase64, externalUrl).filter(Objects::nonNull).count() != 1)
+		{
+			throw new ToolCallException("Provide exactly one of content, contentBase64 or externalUrl");
+		}
+		if (externalUrl != null)
+		{
+			return service.linkReleaseAsset(owner, repo, releaseId, name,
+				ClientMultipartForm.create().attribute("external_url", externalUrl, null));
+		}
+		byte[] bytes = content != null ? content.getBytes(StandardCharsets.UTF_8) : decodeBase64(contentBase64);
+		return service.uploadReleaseAsset(owner, repo, releaseId, name, bytes);
 	}
 
 	@Tool(description = "List a repository's action tasks.")
@@ -174,5 +204,17 @@ public class ForgejoTools
 		option.deleteBranchAfterMerge = deleteBranchAfterMerge;
 		service.mergePullRequest(owner, repo, index, option);
 		return "Pull request " + index + " merged";
+	}
+
+	private static byte[] decodeBase64(String contentBase64)
+	{
+		try
+		{
+			return Base64.getMimeDecoder().decode(contentBase64);
+		}
+		catch (IllegalArgumentException e)
+		{
+			throw new ToolCallException("contentBase64 is not valid base64: " + e.getMessage());
+		}
 	}
 }

@@ -2,6 +2,8 @@ package de.mymiggi.forgejo.mcp.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
+
 public class Release {
     public Long id;
     @JsonProperty("tag_name")
@@ -16,4 +18,5 @@ public class Release {
     public String createdAt;
     @JsonProperty("published_at")
     public String publishedAt;
+    public List<Attachment> assets;
 }
