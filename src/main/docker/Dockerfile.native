@@ -13,8 +13,7 @@
 #
 # docker run -i --rm -p 8080:8080 quarkus/forgejo-mcp
 #
-# The ` registry.access.redhat.com/ubi9/ubi-minimal:9.7` base image is based on UBI 9.
-# To use UBI 8, switch to `quay.io/ubi8/ubi-minimal:8.10`.
+# The `quay.io/quarkus/ubi10-quarkus-micro-image:2.0` base image is based on UBI 10.
 ###
 FROM quay.io/quarkus/ubi10-quarkus-micro-image:2.0
 WORKDIR /work/
