@@ -10,6 +10,7 @@ import de.mymiggi.forgejo.mcp.model.CreateRepoOption;
 import de.mymiggi.forgejo.mcp.model.EditReleaseOption;
 import de.mymiggi.forgejo.mcp.model.Issue;
 import de.mymiggi.forgejo.mcp.model.MergePullRequestOption;
+import de.mymiggi.forgejo.mcp.model.NotificationThread;
 import de.mymiggi.forgejo.mcp.model.PullRequest;
 import de.mymiggi.forgejo.mcp.model.Release;
 import de.mymiggi.forgejo.mcp.model.Repository;
@@ -227,6 +228,26 @@ public class ForgejoTools
 		option.deleteBranchAfterMerge = deleteBranchAfterMerge;
 		service.mergePullRequest(owner, repo, index, option);
 		return "Pull request " + index + " merged";
+	}
+
+	@Tool(description = "List notification threads of the authenticated user, e.g. one per pull request opened by Renovate. "
+		+ "By default only unread and pinned notifications are returned; set all=true to include read ones.")
+	public List<NotificationThread> forgejoListNotifications(
+		@ToolArg(description = "Include read notifications", required = false) Boolean all,
+		@ToolArg(description = "Filter by status: unread, read, pinned (default: unread and pinned)", required = false) List<String> statusTypes,
+		@ToolArg(description = "Filter by subject type: issue, pull, repository", required = false) List<String> subjectTypes,
+		@ToolArg(description = "Only notifications updated after this time (RFC 3339, e.g. 2026-11-21T00:00:00Z)", required = false) String since,
+		@ToolArg(description = "Page number (1-based)", required = false) Integer page,
+		@ToolArg(description = "Page size", required = false) Integer limit)
+	{
+		return service.listNotifications(all, statusTypes, subjectTypes, since, page, limit);
+	}
+
+	@Tool(description = "Mark a notification thread as read. Use forgejoListNotifications to find the thread ID.")
+	public String forgejoMarkNotificationRead(@ToolArg(description = "Notification thread ID", required = true) Long id)
+	{
+		service.markNotificationThread(id, "read");
+		return "Notification " + id + " marked as read";
 	}
 
 	private static boolean isEmpty(String value)

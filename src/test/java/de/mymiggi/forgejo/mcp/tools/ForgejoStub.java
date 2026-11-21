@@ -17,6 +17,9 @@ public class ForgejoStub implements QuarkusTestResourceLifecycleManager
 	static volatile String lastAssetQuery;
 	static volatile String lastAssetContentType;
 	static volatile byte[] lastAssetBody;
+	static volatile String lastNotificationsQuery;
+	static volatile String lastThreadMethod;
+	static volatile String lastThreadQuery;
 
 	private HttpServer server;
 
@@ -54,6 +57,21 @@ public class ForgejoStub implements QuarkusTestResourceLifecycleManager
 			lastAssetBody = exchange.getRequestBody().readAllBytes();
 			respond(exchange, 201, "{\"id\":3,\"name\":\"app.zip\",\"size\":4,\"type\":\"attachment\","
 				+ "\"browser_download_url\":\"https://forgejo/attachments/abc\"}");
+		});
+		server.createContext("/api/v1/notifications", exchange -> {
+			lastNotificationsQuery = exchange.getRequestURI().getRawQuery();
+			respond(exchange, 200, "[{\"id\":42,\"pinned\":false,\"unread\":true,\"updated_at\":\"2026-11-21T08:00:00Z\","
+				+ "\"url\":\"https://forgejo/api/v1/notifications/threads/42\","
+				+ "\"repository\":{\"id\":5,\"name\":\"easy-post\",\"full_name\":\"Miggi/easy-post\"},"
+				+ "\"subject\":{\"title\":\"chore(deps): update pnpm to v11.28.13\",\"type\":\"Pull\",\"state\":\"open\","
+				+ "\"url\":\"https://forgejo/api/v1/repos/Miggi/easy-post/pulls/3\","
+				+ "\"html_url\":\"https://forgejo/Miggi/easy-post/pulls/3\"}}]");
+		});
+		server.createContext("/api/v1/notifications/threads/42", exchange -> {
+			lastThreadMethod = exchange.getRequestMethod();
+			lastThreadQuery = exchange.getRequestURI().getRawQuery();
+			exchange.sendResponseHeaders(205, -1);
+			exchange.close();
 		});
 		server.start();
 		return Map.of("quarkus.rest-client.forgejo.url", "http://localhost:" + server.getAddress().getPort());

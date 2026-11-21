@@ -9,6 +9,7 @@ import de.mymiggi.forgejo.mcp.model.CreateRepoOption;
 import de.mymiggi.forgejo.mcp.model.EditReleaseOption;
 import de.mymiggi.forgejo.mcp.model.Issue;
 import de.mymiggi.forgejo.mcp.model.MergePullRequestOption;
+import de.mymiggi.forgejo.mcp.model.NotificationThread;
 import de.mymiggi.forgejo.mcp.model.PullRequest;
 import de.mymiggi.forgejo.mcp.model.Release;
 import de.mymiggi.forgejo.mcp.model.Repository;
@@ -147,4 +148,18 @@ public interface ForgejoClient
 		@PathParam("repo") String repo,
 		@PathParam("index") Long index,
 		MergePullRequestOption body);
+
+	@GET
+	@Retry(maxRetries = 2, delay = 300, jitter = 100, retryOn = { ForgejoUnavailableException.class, ProcessingException.class })
+	@Path("/notifications")
+	List<NotificationThread> listNotifications(@QueryParam("all") Boolean all,
+		@QueryParam("status-types") List<String> statusTypes,
+		@QueryParam("subject-type") List<String> subjectTypes,
+		@QueryParam("since") String since,
+		@QueryParam("page") Integer page,
+		@QueryParam("limit") Integer limit);
+
+	@PATCH
+	@Path("/notifications/threads/{id}")
+	void markNotificationThread(@PathParam("id") Long id, @QueryParam("to-status") String toStatus);
 }

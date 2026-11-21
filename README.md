@@ -20,6 +20,8 @@ Quarkus-based MCP server (Streamable HTTP transport) that exposes Forgejo reposi
 - Get a pull request
 - Create pull requests
 - Merge pull requests
+- List notifications (e.g. one per Renovate pull request)
+- Mark notifications as read
 
 ## Quick start
 1. Copy env file and set the Forgejo URL:
@@ -87,6 +89,8 @@ Example MCP client config:
 - `forgejoGetPullRequest(owner, repo, index)`
 - `forgejoCreatePullRequest(owner, repo, title, body, head, base)`
 - `forgejoMergePullRequest(owner, repo, index, doStrategy, mergeTitle, mergeMessage, deleteBranchAfterMerge)` – doStrategy: merge/rebase/rebase-merge/squash/fast-forward-only/manually-merged
+- `forgejoListNotifications(all, statusTypes, subjectTypes, since, page, limit)` – all args optional; statusTypes: unread/read/pinned (default unread+pinned, `all=true` includes read); subjectTypes: issue/pull/repository; since: RFC 3339 timestamp. Needs the `read:notification` token scope
+- `forgejoMarkNotificationRead(id)` – marks a notification thread as read. Needs the `write:notification` token scope
 
 ## Error handling
 Forgejo API errors are returned as MCP tool errors (`isError` result) with the HTTP status, Forgejo's own error message and a hint (e.g. 401 → token missing/invalid/revoked, 404 → not found or no access) instead of a generic JSON-RPC "Internal error". Connection failures are reported as `Could not reach Forgejo: ...`. Read-only (GET) tools retry up to 2 times on 502/503/504 responses and connection errors; write operations (create/update/merge) are never retried. Timeouts: 5s connect, 30s read.
