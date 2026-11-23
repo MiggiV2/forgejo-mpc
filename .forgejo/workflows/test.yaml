@@ -27,7 +27,7 @@ jobs:
       - name: Set up Maven
         uses: https://github.com/stCarolas/setup-maven@v5
         with:
-          maven-version: 3.9.10
+          maven-version: 3.10.2
 
       - name: Run maven test
         run: mvn clean test -fae
